@@ -1,28 +1,16 @@
-# buildroot-rpi
+# AESD Final Project
+This repository contains the contents for the course Advanced Embedded Software Development (ECEN 5713) Final Project.
+
+# Project Overview
+
+Click [here](https://github.com/cu-ecen-aeld/final-project-VenkatTata/wiki/Project-Overview) for the project overview.
+
+# Project Schedule
+
+Click [here](https://github.com/cu-ecen-aeld/final-project-VenkatTata/wiki/Final-Project-Assignment-Schedule-Page) for the project schedule.
 
 
-We will be using rpi3
+# Team Project Members
 
-Configuration of rpi  for Buildroot:
-----------------------------
-Other configuration of rpi:
-----------------------------
-For models A, B, A+ or B+:
-
-  $ make raspberrypi_defconfig
-
-For model Zero (model A+ in smaller form factor):
-
-  $ make raspberrypi0_defconfig
-
-For model 2 B:
-
-  $ make raspberrypi2_defconfig
-
-For model 3 B and B+:
-
-  $ make raspberrypi3_defconfig
-
-For model 4 B:
-
-  $ make raspberrypi4_defconfig
+1. Midhun Kumar Koneru  
+2. Venkat Tata   
