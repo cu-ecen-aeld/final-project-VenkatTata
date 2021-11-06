@@ -1,5 +1,17 @@
-# Overview
+# AESD Final Project
+This repository contains the contents for the course Advanced Embedded Software Development (ECEN 5713) Final Project.
 
-This repository contains assignment starter code for buildroot based assignments for the course Advanced Embedded Software Design, ECEN 5013
+# Project Overview
 
-It also contains instructions related to modifying your buildroot project to use with supported hardware platforms.  See [this wiki page](https://github.com/cu-ecen-5013/buildroot-assignments-base/wiki/Supported-Hardware) for details.
+Click [here](https://github.com/cu-ecen-aeld/final-project-VenkatTata/wiki/Project-Overview) for the project overview.
+
+# Project Schedule
+
+Click [here](https://github.com/cu-ecen-aeld/final-project-VenkatTata/wiki/Final-Project-Assignment-Schedule-Page) for the project schedule.
+
+
+# Team Project Members
+
+1. Midhun Kumar Koneru  
+2. Venkat Tata   
+
