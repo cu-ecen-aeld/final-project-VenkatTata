@@ -67,5 +67,5 @@ void main()
 		temp -= 4096;
 	}
 	syslog(LOG_DEBUG,"Temperature in Celsius : %d degree C", (int)(temp * 0.0625));
-	printf("Temperature in Celsius : %d degree C", (int)(temp * 0.0625));
+	printf("Temperature in Celsius : %d degree C/n/r", (int)(temp * 0.0625));
 }
