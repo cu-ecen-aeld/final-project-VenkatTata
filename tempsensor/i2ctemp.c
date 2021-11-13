@@ -21,7 +21,7 @@ void main()
 		exit(1);
 	}
 
-	int addr= 0x48; TMP102 I2C address is 0x48(72)
+	int addr= 0x48; //TMP102 I2C address is 0x48(72)
 	
 	//set the address of the device to address
 	if(ioctl(file, I2C_SLAVE, addr) < 0)
