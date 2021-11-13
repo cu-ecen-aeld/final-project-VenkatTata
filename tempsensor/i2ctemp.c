@@ -5,53 +5,62 @@
 #include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
+#include <syslog.h>
+#include <unistd.h>
 
 void main() 
 {
 	// Create I2C bus
 	int file;
-	char *bus = "/dev/i2c-1";
-	if((file = open(bus, O_RDWR)) < 0) 
+	
+	char *i2c_dev_filename = "/dev/i2c-1";//Always adapter 1 on RPi
+	file = open(i2c_dev_filename, O_RDWR);
+	if(file < 0) 
 	{
-		printf("Failed to open the bus. \n");
+		syslog(LOG_ERR,"Failed to open the i2c-1 bus");
 		exit(1);
 	}
-	// Get I2C device, TMP112 I2C address is 0x48(72)
-	ioctl(file, I2C_SLAVE, 0x48);
+
+	int addr= 0x48; //TMP102 I2C address is 0x48(72)
+	
+	//set the address of the device to address
+	if(ioctl(file, I2C_SLAVE, 0x48) < 0)
+	{
+		syslog(LOG_ERR,"Failed to set the address of the device to address");
+		exit(1);
+	}
 
 	// Select configuration register(0x01)
-	// Continous Conversion mode, 12-Bit Resolution, Fault Queue is 1(0x60)
-	// Polarity low, Thermostat in Comparator mode, Disables Shutdown mode(0xA0)
-	char config[3] = {0};
-	config[0] = 0x01;
-	config[1] = 0x60;
-	config[2] = 0xA0;
-	write(file, config, 3);
-	sleep(1);
+	// Continous Conversion mode, 12-Bit Resolution
+	char buf[3] = {0};
+	buf[0] = 0x01;
+	buf[1] = 0x60;
+	buf[2] = 0xA0;
+	write(file, buf, 3);
 
-	// Read 2 bytes of data from register(0x00)
-	// temp msb, temp lsb
+	//Wait for the transaction to complete and sensor to initialise and perform measurement
+	sleep(1);
+	
+	//On completing the measurement, the values can be read
 	char reg[1] = {0x00};
 	write(file, reg, 1);
-	char data[2] = {0};
-	if(read(file, data, 2) != 2)
+
+	//read the measured temperature value
+	char measured_temp[2] = {0};
+	int rc = read(file, measured_temp, 2);
+	if( rc != 2)
 	{
-		printf("Error : Input/Output error \n");
+		syslog(LOG_ERR,"i2c read transaction failed");
+		printf("i2c read transaction failed %d",rc);
 		exit(1);
 	}
-	else
-	{
-		// Convert the data to 12-bits
-		int temp = (data[0] * 256 + data[1]) / 16;
-		if(temp > 2047)
-		{
-			temp -= 4096;
-		}
-		float cTemp = temp * 0.0625;
-		float fTemp = (cTemp * 1.8) + 32;
 	
-		// Output data to screen
-		printf("Temperature in Celsius : %.2f C \n", cTemp);
-		printf("Temperature in Fahrenheit : %.2f F \n", fTemp);
+	//Convert register values to temperature measurements
+	int temp = (measured_temp[0] * 256 + measured_temp[1]) / 16;
+	if(temp > 2047)
+	{
+		temp -= 4096;
 	}
+	syslog(LOG_DEBUG,"Temperature in Celsius : %d degree C", (int)(temp * 0.0625));
+	printf("Temperature in Celsius : %d degree C", (int)(temp * 0.0625));
 }
