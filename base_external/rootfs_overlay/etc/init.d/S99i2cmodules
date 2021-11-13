@@ -1,0 +1,16 @@
+#!/bin/sh
+
+case "$1" in
+  start)
+    echo "Loading i2c modules"
+    modprobe i2c-bcm2835
+    modprobe i2c-dev
+    ;;
+    stop)
+    ;;
+  *)
+    echo "Usage: $0 {start|stop}"
+  exit 1
+esac
+
+exit 0
