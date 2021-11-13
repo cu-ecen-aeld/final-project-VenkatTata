@@ -6,19 +6,18 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <syslog.h>
+#include <unistd.h>
 
 void main() 
 {
 	// Create I2C bus
 	int file;
-	int adapter_nr = 1; //Always adapter 1 on RPi
-	char i2c_dev_filename[20];
-
-	snprintf(i2c_dev_filename,"/dev/i2c-%d",adapter_nr);
+	
+	char *i2c_dev_filename = "/dev/i2c-1";//Always adapter 1 on RPi
 	file = open(i2c_dev_filename, O_RDWR);
 	if(file < 0) 
 	{
-		syslog("Failed to open the i2c-1 bus");
+		syslog(LOG_ERR,"Failed to open the i2c-1 bus");
 		exit(1);
 	}
 
@@ -27,7 +26,7 @@ void main()
 	//set the address of the device to address
 	if(ioctl(file, I2C_SLAVE, addr) < 0)
 	{
-		syslog("Failed to set the address of the device to address");
+		syslog(LOG_ERR,"Failed to set the address of the device to address");
 		exit(1);
 	}
 
@@ -50,7 +49,7 @@ void main()
 	char measured_temp[2] = {0};
 	if(read(file, measured_temp, 2) != 2)
 	{
-		syslog("i2c read transaction failed");
+		syslog(LOG_ERR,"i2c read transaction failed");
 		exit(1);
 	}
 	
@@ -60,5 +59,6 @@ void main()
 	{
 		temp -= 4096;
 	}
-	syslog("Temperature in Celsius : %d degree C", temp * 0.0625);
+	syslog(LOG_DEBUG,"Temperature in Celsius : %d degree C", (int)(temp * 0.0625));
+	printf("Temperature in Celsius : %d degree C", (int)(temp * 0.0625));
 }
