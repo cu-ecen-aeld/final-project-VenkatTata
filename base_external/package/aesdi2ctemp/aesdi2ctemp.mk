@@ -6,7 +6,7 @@
 ##############################################################
 
 #TODO: Fill up the contents below in order to reference final project git contents
-AESDI2CTEMP_VERSION = '7995c90bfc34a35ff2009876fef3d786c2f06e6a'
+AESDI2CTEMP_VERSION = '6275c50e974b05844806697f797a356c972df4dc'
 # Note: Be sure to reference the *ssh* repository URL here (not https) to work properly
 # with ssh keys and the automated build/test system.
 # Your site should start with git@github.com:

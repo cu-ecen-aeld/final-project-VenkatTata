@@ -24,7 +24,7 @@ void main()
 	int addr= 0x48; //TMP102 I2C address is 0x48(72)
 	
 	//set the address of the device to address
-	if(ioctl(file, I2C_SLAVE, addr) < 0)
+	if(ioctl(file, I2C_SLAVE, 0x48) < 0)
 	{
 		syslog(LOG_ERR,"Failed to set the address of the device to address");
 		exit(1);
@@ -32,10 +32,10 @@ void main()
 
 	// Select configuration register(0x01)
 	// Continous Conversion mode, 12-Bit Resolution
-	char buf[3] = {0x01,0x60,0xA0};
-	//buf[0] = 0x01;
-	//buf[1] = 0x60;
-	//buf[2] = 0xA0;
+	char buf[3] = {0};
+	buf[0] = 0x01;
+	buf[1] = 0x60;
+	buf[2] = 0xA0;
 	write(file, buf, 3);
 
 	//Wait for the transaction to complete and sensor to initialise and perform measurement
@@ -47,9 +47,11 @@ void main()
 
 	//read the measured temperature value
 	char measured_temp[2] = {0};
-	if(read(file, measured_temp, 2) != 2)
+	int rc = read(file, measured_temp, 2);
+	if( rc != 2)
 	{
 		syslog(LOG_ERR,"i2c read transaction failed");
+		printf("i2c read transaction failed %d",rc);
 		exit(1);
 	}
 	
