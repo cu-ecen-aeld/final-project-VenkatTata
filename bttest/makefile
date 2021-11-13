@@ -12,8 +12,10 @@ endif
 all: bttest
 
 bttest.o: bttest.c
-	$(CC) $(CFLAGS) -c bttest.c -lbluetooth
+	$(CC) $(CFLAGS) -c bttest.c
 
+bttest: bttest.o
+	$(CC) $(CFLAGS) bttest.o -o bttest -lbluetooth
 clean:
 	rm -f *.o
 	rm -f bttest
