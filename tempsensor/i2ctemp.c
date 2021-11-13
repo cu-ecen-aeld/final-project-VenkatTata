@@ -1,4 +1,9 @@
-//Referenced from https://github.com/ControlEverythingCommunity/TMP112/blob/master/C/TMP112.c
+//Name   : i2ctemp.c
+//Author : Venkat Tata
+//Date   : 11/12/21
+//brief  : Reads the temperature value measured by the I2C based TMP102 sensor itnerfaced to RPi via I2C-1 
+//References : https://www.kernel.org/doc/Documentation/i2c/dev-interface
+//Additional reference : https://github.com/ControlEverythingCommunity/TMP112/blob/master/C/TMP112.c
 
 #include <stdio.h>
 #include <stdlib.h>
