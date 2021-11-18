@@ -21,6 +21,7 @@ endef
 # TODO add your writer, finder and finder-test utilities/scripts to the installation steps below
 define BTTEST_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0755 $(@D)/bttest/* $(TARGET_DIR)/usr/bin
+	$(INSTALL) -m 0755 $(@D)/bluez5_utils_5.55/tools/gatt-service $(TARGET_DIR)/usr/bin
 endef
 
 $(eval $(generic-package))
