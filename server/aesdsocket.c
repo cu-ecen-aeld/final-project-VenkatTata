@@ -41,13 +41,6 @@
 #define CHUNK_SIZE 600
 #define BACKLOG 10
 
-#if USE_AESD_CHAR_DEVICE
-//#   define TEST_FILE "/dev/aesdchar"
-#   define TEST_FILE "/var/tmp/aesdsocketdata"
-#else
-#   define TEST_FILE "/var/tmp/aesdsocketdata"
-#endif
-
 #define BEGIN 0
 
 char IP_addr[INET6_ADDRSTRLEN];
@@ -78,21 +71,18 @@ void *get_in_addr(struct sockaddr *sa)
 
 void close_all()
 {
-
-     	finish = 1;
+    finish = 1;
 	//Functions called due to an error, hence close files errno not 
 	//checked in this function
 	//All close errors handled in signal handler when no error occured
 	close(serv_sock_fd);
 	
-	//Close regular file - output file fd
-	close(output_file_fd);
 
-    	//After completing above procedure successfuly, exit logged
+    //After completing above procedure successfuly, exit logged
 	syslog(LOG_DEBUG,"Caught signal, exiting");
 	
-    	//close the logging for aesdsocket                              
-    	closelog();
+    //close the logging for aesdsocket                              
+    closelog();
 }
 
 static void signal_handler(int signo)
@@ -163,13 +153,7 @@ void* handle_connection(void *threadp)
 	int failure=0;
 	char temp_values[8]={'\0'};
     threadParams_t *thread_handle_sock = (threadParams_t*)threadp;
-    output_file_fd=open(TEST_FILE,O_CREAT|O_RDWR|O_APPEND,0644);
-	if(output_file_fd == -1)
-	{
-		perror("error opening file at /var/temp/aesdsocketdata");
-		exit(-1);
-	}
-      
+     
     while(!finish)
 	{
 		if (sigprocmask(SIG_BLOCK,&(thread_handle_sock->mask),NULL) == -1)
@@ -179,14 +163,15 @@ void* handle_connection(void *threadp)
 			exit(-1);
 		}
 		float temperature=temp_sensor_read();
-		int temp_conversion = (int)(temperature *100);
-		sprintf(temp_values,"%d.%d",(temp_conversion & 0xFF00),(temp_conversion & 0x00FF));
+		int whole_temp = (temperature *100);
+		int decimal_temp= (temperature *100) - (whole_temp *100);
+		sprintf(temp_values,"%d.%d",whole_temp,decimal_temp);
 		int rc = send(client_sock_fd, temp_values, strlen(temp_values), 0);
 		if(rc == -1)
 		{
 			perror("send error");
 			failure++;
-			//Still tries to send next time
+			//Still tries to send next value next time
 		}
 		if(failure==3)
 		{
@@ -202,8 +187,7 @@ void* handle_connection(void *threadp)
 		close_all();
 		exit(-1);
 	}
-    
-    close(output_file_fd);
+
     close(client_sock_fd);
     return threadp;
 }
