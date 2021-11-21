@@ -163,8 +163,8 @@ void* handle_connection(void *threadp)
 			exit(-1);
 		}
 		float temperature=temp_sensor_read();
-		int whole_temp = (temperature *100);
-		int decimal_temp= (temperature *100) - (whole_temp *100);
+		int whole_temp = temperature;
+		int decimal_temp= (temperature *100) - (whole_temp *100);S
 		sprintf(temp_values,"%d.%d",whole_temp,decimal_temp);
 		int rc = send(client_sock_fd, temp_values, strlen(temp_values), 0);
 		if(rc == -1)
