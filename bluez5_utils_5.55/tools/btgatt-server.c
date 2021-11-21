@@ -290,7 +290,7 @@ static void hr_msrmt_ccc_read_cb(struct gatt_db_attribute *attrib,
 
 	gatt_db_attribute_read_result(attrib, id, 0, value, 2);
 }
-void temp_sensor_read()
+int temp_sensor_read()
 {
 	// Create I2C bus
 	int file;
