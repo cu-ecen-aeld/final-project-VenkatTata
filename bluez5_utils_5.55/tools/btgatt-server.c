@@ -34,6 +34,7 @@
 #include <fcntl.h>
 #include <syslog.h>
 
+
 #include "lib/bluetooth.h"
 #include "lib/hci.h"
 #include "lib/hci_lib.h"
@@ -50,10 +51,10 @@
 
 #define UUID_GAP			0x1800
 #define UUID_GATT			0x1801
-#define UUID_HEART_RATE			0x180d
-#define UUID_HEART_RATE_MSRMT		0x2a37
-#define UUID_HEART_RATE_BODY		0x2a38
-#define UUID_HEART_RATE_CTRL		0x2a39
+#define UUID_HEALTH_THERMO_RATE		0x1809
+#define UUID_HEALTH_THERMO_MSRMT		0x2A1C
+//#define UUID_HEART_RATE_BODY		0x2a38
+//#define UUID_HEART_RATE_CTRL		0x2a39
 
 #define ATT_CID 4
 
@@ -76,8 +77,7 @@
 #define COLOR_BOLDGRAY	"\x1B[1;30m"
 #define COLOR_BOLDWHITE	"\x1B[1;37m"
 
-static const char test_device_name[] = "Very Long Test Device Name For Testing "
-				"ATT Protocol Operations On GATT Server";
+static const char test_device_name[] = "AESD temperature monitor";
 static bool verbose = false;
 
 struct server {
@@ -92,7 +92,7 @@ struct server {
 	uint16_t gatt_svc_chngd_handle;
 	bool svc_chngd_enabled;
 
-	uint16_t hr_handle;
+	uint16_t ht_handle;
 	uint16_t hr_msrmt_handle;
 	uint16_t hr_energy_expended;
 	bool hr_visible;
@@ -348,12 +348,11 @@ static bool hr_msrmt_cb(void *user_data)
 {
 	struct server *server = user_data;
 	bool expended_present = !(server->hr_ee_count % 10);
-	uint16_t len = 2;
+	uint16_t len = 1;
 	uint8_t pdu[4];
 	uint32_t cur_ee;
 
 	pdu[0] = temp_sensor_read();
-	//pdu[1] = temp_sensor_read();
 
 	if (expended_present) {
 		pdu[0] |= 0x08;
@@ -542,21 +541,21 @@ static void populate_gatt_service(struct server *server)
 static void populate_hr_service(struct server *server)
 {
 	bt_uuid_t uuid;
-	struct gatt_db_attribute *service, *hr_msrmt, *body;
+	struct gatt_db_attribute *service, *ht_msrmt, *body;
 	uint8_t body_loc = 1;  /* "Chest" */
 
-	/* Add Heart Rate Service */
-	bt_uuid16_create(&uuid, UUID_HEART_RATE);
+	/* Add health_thermometer Service */
+	bt_uuid16_create(&uuid, UUID_HEALTH_THERMO_RATE);
 	service = gatt_db_add_service(server->db, &uuid, true, 8);
-	server->hr_handle = gatt_db_attribute_get_handle(service);
+	server->ht_handle = gatt_db_attribute_get_handle(service);
 
-	/* HR Measurement Characteristic */
-	bt_uuid16_create(&uuid, UUID_HEART_RATE_MSRMT);
-	hr_msrmt = gatt_db_service_add_characteristic(service, &uuid,
+	///* health_thermometer  Characteristic */
+	bt_uuid16_create(&uuid, UUID_HEALTH_THERMO_MSRMT);
+	ht_msrmt = gatt_db_service_add_characteristic(service, &uuid,
 						BT_ATT_PERM_NONE,
 						BT_GATT_CHRC_PROP_NOTIFY,
 						NULL, NULL, NULL);
-	server->hr_msrmt_handle = gatt_db_attribute_get_handle(hr_msrmt);
+	server->hr_msrmt_handle = gatt_db_attribute_get_handle(ht_msrmt);
 
 	bt_uuid16_create(&uuid, GATT_CLIENT_CHARAC_CFG_UUID);
 	gatt_db_service_add_descriptor(service, &uuid,
@@ -564,27 +563,27 @@ static void populate_hr_service(struct server *server)
 					hr_msrmt_ccc_read_cb,
 					hr_msrmt_ccc_write_cb, server);
 
-	/*
-	 * Body Sensor Location Characteristic. Make reads obtain the value from
-	 * the database.
-	 */
-	bt_uuid16_create(&uuid, UUID_HEART_RATE_BODY);
-	body = gatt_db_service_add_characteristic(service, &uuid,
-						BT_ATT_PERM_READ,
-						BT_GATT_CHRC_PROP_READ,
-						NULL, NULL, server);
-	gatt_db_attribute_write(body, 0, (void *) &body_loc, sizeof(body_loc),
-							BT_ATT_OP_WRITE_REQ,
-							NULL, confirm_write,
-							NULL);
+	///*
+	 //* Body Sensor Location Characteristic. Make reads obtain the value from
+	 //* the database.
+	 //*/
+	//bt_uuid16_create(&uuid, UUID_HEART_RATE_BODY);
+	//body = gatt_db_service_add_characteristic(service, &uuid,
+						//BT_ATT_PERM_READ,
+						//BT_GATT_CHRC_PROP_READ,
+						//NULL, NULL, server);
+	//gatt_db_attribute_write(body, 0, (void *) &body_loc, sizeof(body_loc),
+							//BT_ATT_OP_WRITE_REQ,
+							//NULL, confirm_write,
+							//NULL);
 
-	/* HR Control Point Characteristic */
-	bt_uuid16_create(&uuid, UUID_HEART_RATE_CTRL);
-	gatt_db_service_add_characteristic(service, &uuid,
-						BT_ATT_PERM_WRITE,
-						BT_GATT_CHRC_PROP_WRITE,
-						NULL, hr_control_point_write_cb,
-						server);
+	///* HR Control Point Characteristic */
+	//bt_uuid16_create(&uuid, UUID_HEART_RATE_CTRL);
+	//gatt_db_service_add_characteristic(service, &uuid,
+						//BT_ATT_PERM_WRITE,
+						//BT_GATT_CHRC_PROP_WRITE,
+						//NULL, hr_control_point_write_cb,
+						//server);
 
 	if (server->hr_visible)
 		gatt_db_service_set_active(service, true);
@@ -656,7 +655,7 @@ static struct server *server_create(int fd, uint16_t mtu, bool hr_visible)
 							"server: ", NULL);
 	}
 
-	/* Random seed for generating fake Heart Rate measurements */
+	/* Random seed for generating fake health_thermometer measurements */
 	srand(time(NULL));
 
 	/* bt_gatt_server already holds a reference */
@@ -692,7 +691,7 @@ static void usage(void)
 								"medium|high)\n"
 		"\t-t, --type [random|public] \t The source address type\n"
 		"\t-v, --verbose\t\t\tEnable extra logging\n"
-		"\t-r, --heart-rate\t\tEnable Heart Rate service\n"
+		"\t-r, --health-thermometer\t\tEnable health thermometer service\n"
 		"\t-h, --help\t\t\tDisplay help\n");
 }
 
@@ -702,7 +701,7 @@ static struct option main_options[] = {
 	{ "security-level",	1, 0, 's' },
 	{ "type",		1, 0, 't' },
 	{ "verbose",		0, 0, 'v' },
-	{ "heart-rate",		0, 0, 'r' },
+	{ "health-thermometer",		0, 0, 'r' },
 	{ "help",		0, 0, 'h' },
 	{ }
 };
@@ -896,19 +895,19 @@ done:
 	free(value);
 }
 
-static void heart_rate_usage(void)
+static void health_thermometer_usage(void)
 {
-	printf("Usage: heart-rate on|off\n");
+	printf("Usage: health_thermometer on|off\n");
 }
 
-static void cmd_heart_rate(struct server *server, char *cmd_str)
+static void cmd_health_thermometer(struct server *server, char *cmd_str)
 {
 	bool enable;
 	uint8_t pdu[4];
 	struct gatt_db_attribute *attr;
 
 	if (!cmd_str) {
-		heart_rate_usage();
+		health_thermometer_usage();
 		return;
 	}
 
@@ -917,26 +916,26 @@ static void cmd_heart_rate(struct server *server, char *cmd_str)
 	else if (strcmp(cmd_str, "off") == 0)
 		enable = false;
 	else {
-		heart_rate_usage();
+		health_thermometer_usage();
 		return;
 	}
 
 	if (enable == server->hr_visible) {
-		printf("Heart Rate Service already %s\n",
+		printf("health thermometer Service already %s\n",
 						enable ? "visible" : "hidden");
 		return;
 	}
 
 	server->hr_visible = enable;
-	attr = gatt_db_get_attribute(server->db, server->hr_handle);
+	attr = gatt_db_get_attribute(server->db, server->ht_handle);
 	gatt_db_service_set_active(attr, server->hr_visible);
 	update_hr_msrmt_simulation(server);
 
 	if (!server->svc_chngd_enabled)
 		return;
 
-	put_le16(server->hr_handle, pdu);
-	put_le16(server->hr_handle + 7, pdu + 2);
+	put_le16(server->ht_handle, pdu);
+	put_le16(server->ht_handle + 7, pdu + 2);
 
 	server->hr_msrmt_enabled = false;
 	update_hr_msrmt_simulation(server);
@@ -1111,7 +1110,7 @@ static struct {
 } command[] = {
 	{ "help", cmd_help, "\tDisplay help message" },
 	{ "notify", cmd_notify, "\tSend handle-value notification" },
-	{ "heart-rate", cmd_heart_rate, "\tHide/Unhide Heart Rate Service" },
+	{ "health-thermometer", cmd_health_thermometer, "\tHide/Unhide health thermometer Service" },
 	{ "services", cmd_services, "\tEnumerate all services" },
 	{ "set-sign-key", cmd_set_sign_key,
 			"\tSet remote signing key for signed write command"},
