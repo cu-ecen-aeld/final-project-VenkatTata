@@ -52,7 +52,7 @@
 #define UUID_GAP			0x1800
 #define UUID_GATT			0x1801
 #define UUID_HEALTH_THERMO_RATE		0x1809
-//#define UUID_HEART_RATE_MSRMT		0x2A1C
+#define UUID_HEALTH_THERMO_MSRMT		0x2A1C
 //#define UUID_HEART_RATE_BODY		0x2a38
 //#define UUID_HEART_RATE_CTRL		0x2a39
 
@@ -543,7 +543,7 @@ static void populate_gatt_service(struct server *server)
 static void populate_hr_service(struct server *server)
 {
 	bt_uuid_t uuid;
-	struct gatt_db_attribute *service, *hr_msrmt, *body;
+	struct gatt_db_attribute *service, *ht_msrmt, *body;
 	uint8_t body_loc = 1;  /* "Chest" */
 
 	/* Add health_thermometer Service */
@@ -551,13 +551,13 @@ static void populate_hr_service(struct server *server)
 	service = gatt_db_add_service(server->db, &uuid, true, 8);
 	server->ht_handle = gatt_db_attribute_get_handle(service);
 
-	///* HR Measurement Characteristic */
-	//bt_uuid16_create(&uuid, UUID_HEART_RATE_MSRMT);
-	//hr_msrmt = gatt_db_service_add_characteristic(service, &uuid,
-						//BT_ATT_PERM_NONE,
-						//BT_GATT_CHRC_PROP_NOTIFY,
-						//NULL, NULL, NULL);
-	//server->hr_msrmt_handle = gatt_db_attribute_get_handle(hr_msrmt);
+	///* health_thermometer  Characteristic */
+	bt_uuid16_create(&uuid, UUID_HEALTH_THERMO_MSRMT);
+	ht_msrmt = gatt_db_service_add_characteristic(service, &uuid,
+						BT_ATT_PERM_NONE,
+						BT_GATT_CHRC_PROP_NOTIFY,
+						NULL, NULL, NULL);
+	server->hr_msrmt_handle = gatt_db_attribute_get_handle(ht_msrmt);
 
 	//bt_uuid16_create(&uuid, GATT_CLIENT_CHARAC_CFG_UUID);
 	//gatt_db_service_add_descriptor(service, &uuid,
