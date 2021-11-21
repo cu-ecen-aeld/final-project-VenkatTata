@@ -13,7 +13,7 @@ endif
 all: aesdsocket
 
 aesdsocket: aesdsocket.c
-	$(CC) $^ -o $@ $(INCLUDES) -pthread -lrt -g -Wall -Werror
+	$(CC) $^ -o $@ $(INCLUDES) -pthread -lrt -g
 
 clean:
 	rm -f aesdsocket *.o
