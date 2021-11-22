@@ -5,7 +5,7 @@ case "$1" in
     echo "Loading bluetooth modules, attaching	adapter and completes configuration"
 	modprobe hci_uart
 	hciattach /dev/ttyAMA0 bcm43xx 921600 flow -
-	hciconfig hic0 up
+	hciconfig hci0 up
 
     ;;
     stop)

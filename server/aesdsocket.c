@@ -1,12 +1,11 @@
 /**
  * @file    aesdsocket.c
- * @brief   Code to create a socket, receive packet. Local port 9000. Store in file, 
- *	    send it back to local client. accepts -d argument to run as daemon
- *	    in the background. SIGINT and SIGTERM are the only signals possible
+ * @brief   Code to create a socket, send temperature values as a packet. Local port 9000.
+ *	    SIGINT and SIGTERM are the only signals possible
  * 	    and are handled.
  *			
  * @author	Venkat Sai Krishna Tata
- * @Date	10/10/2021
+ * @Date	21/11/2021
  * @References: Textbook: Linux System Programming
  *		https://stackoverflow.com/questions/803776/help-comparing-an-argv-string
  *		https://beej.us/guide/bgnet/html/
