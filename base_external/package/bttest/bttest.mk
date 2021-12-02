@@ -6,7 +6,7 @@
 ##############################################################
 
 #TODO: Fill up the contents below in order to reference final project git contents
-BTTEST_VERSION = '55766abf20c324e3893c8d03df60f0cc4eda7070'
+BTTEST_VERSION = '8cbe81465eaf4304e84b1f3cce651b820e180155'
 # Note: Be sure to reference the *ssh* repository URL here (not https) to work properly
 # with ssh keys and the automated build/test system.
 # Your site should start with git@github.com:
