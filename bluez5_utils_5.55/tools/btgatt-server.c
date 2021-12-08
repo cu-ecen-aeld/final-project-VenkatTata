@@ -53,8 +53,6 @@
 #define UUID_GATT			0x1801
 #define UUID_HEALTH_THERMO_RATE		0x1809
 #define UUID_HEALTH_THERMO_MSRMT		0x2A1C
-//#define UUID_HEART_RATE_BODY		0x2a38
-//#define UUID_HEART_RATE_CTRL		0x2a39
 
 #define ATT_CID 4
 
@@ -562,28 +560,6 @@ static void populate_hr_service(struct server *server)
 					BT_ATT_PERM_READ | BT_ATT_PERM_WRITE,
 					hr_msrmt_ccc_read_cb,
 					hr_msrmt_ccc_write_cb, server);
-
-	///*
-	 //* Body Sensor Location Characteristic. Make reads obtain the value from
-	 //* the database.
-	 //*/
-	//bt_uuid16_create(&uuid, UUID_HEART_RATE_BODY);
-	//body = gatt_db_service_add_characteristic(service, &uuid,
-						//BT_ATT_PERM_READ,
-						//BT_GATT_CHRC_PROP_READ,
-						//NULL, NULL, server);
-	//gatt_db_attribute_write(body, 0, (void *) &body_loc, sizeof(body_loc),
-							//BT_ATT_OP_WRITE_REQ,
-							//NULL, confirm_write,
-							//NULL);
-
-	///* HR Control Point Characteristic */
-	//bt_uuid16_create(&uuid, UUID_HEART_RATE_CTRL);
-	//gatt_db_service_add_characteristic(service, &uuid,
-						//BT_ATT_PERM_WRITE,
-						//BT_GATT_CHRC_PROP_WRITE,
-						//NULL, hr_control_point_write_cb,
-						//server);
 
 	if (server->hr_visible)
 		gatt_db_service_set_active(service, true);
