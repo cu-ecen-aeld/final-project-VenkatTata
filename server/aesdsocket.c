@@ -201,7 +201,7 @@ int main(int argc, char* argv[])
 
 
 
-    //With node as null and ai_flags as AI_PASSIVE, the socket address 
+    	//With node as null and ai_flags as AI_PASSIVE, the socket address 
 	//will be suitable for binding a socket that will accept connections
 	struct addrinfo hints;
 	memset(&hints, 0, sizeof hints);
@@ -218,7 +218,7 @@ int main(int argc, char* argv[])
 		exit(-1);
 	}
 
-    //Creating an end point for communication with type = SOCK_STREAM(connection oriented)
+    	//Creating an end point for communication with type = SOCK_STREAM(connection oriented)
 	//and protocol =0 which allows to use appropriate protocol (TCP) here
 	serv_sock_fd=socket(res->ai_family,res->ai_socktype,res->ai_protocol);
 	if(serv_sock_fd==-1)
@@ -232,7 +232,7 @@ int main(int argc, char* argv[])
 	if (setsockopt(serv_sock_fd, SOL_SOCKET, SO_REUSEADDR, &dummie, sizeof(int)) == -1) 
 	{	
 		perror("setsockopt error");
-    }
+    	}
     
 	//Assign address to the socket created
 	int rc=bind(serv_sock_fd, res->ai_addr, res->ai_addrlen);
@@ -242,7 +242,7 @@ int main(int argc, char* argv[])
 		exit(-1);
 	}
   
-    freeaddrinfo(res);
+    	freeaddrinfo(res);
 
 	//Registering signal_handler as the handler for the signals SIGTERM 
 	//and SIGINT
